@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Semantic Analyzer</title>
+    <link rel="stylesheet" href="style.css" />
+    <!-- Библиотеки для drag-and-drop и графиков -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Экран входа -->
+    <div id="login-screen">
+        <div class="login-box">
+            <h2>Вход в систему</h2>
+            <input type="text" id="loginInput" placeholder="Логин" />
+            <input type="password" id="passwordInput" placeholder="Пароль" />
+            <button onclick="login()">Войти</button>
+            <p id="loginError" style="color:red"></p>
+            <button onclick="showRegister()">Регистрация</button>
+        </div>
+        <div class="register-box" style="display:none">
+            <h2>Регистрация</h2>
+            <input type="text" id="regLogin" placeholder="Логин" />
+            <input type="text" id="regName" placeholder="Имя" />
+            <input type="password" id="regPassword" placeholder="Пароль" />
+            <input type="text" id="regOrganization" placeholder="Организация (необязательно)" />
+            <button onclick="register()">Зарегистрироваться</button>
+            <button onclick="hideRegister()">Назад</button>
+            <p id="regError" style="color:red"></p>
+        </div>
+    </div>
+
+    <!-- Основной интерфейс -->
+    <div id="app" style="display:none">
+        <nav>
+            <button class="tablink" onclick="openTab(event, 'analysis')">Анализ</button>
+            <button class="tablink" onclick="openTab(event, 'calendar')">Календарь</button>
+            <button class="tablink" onclick="openTab(event, 'tasks')">Задачи</button>
+            <button class="tablink" onclick="openTab(event, 'notes')">Заметки</button>
+            <button class="tablink" onclick="openTab(event, 'protocols')">Протоколы</button>
+            <button class="tablink" onclick="openTab(event, 'notifications')">Уведомления</button>
+            <button class="tablink" onclick="openTab(event, 'search')">Поиск</button>
+            <button class="tablink" onclick="openTab(event, 'analytics')">Аналитика</button>
+            <span style="float:right; color:white; padding: 10px;" id="userDisplay"></span>
+            <button style="float:right" onclick="logout()">Выход</button>
+        </nav>
+
+        <!-- Анализ -->
+        <div id="analysis" class="tabcontent">
+            <h2>Загрузка файла</h2>
+            <button onclick="selectAndAnalyze()">Выбрать файл и анализировать</button>
+            <div id="analysisResult"></div>
+        </div>
+
+        <!-- Календарь -->
+        <div id="calendar" class="tabcontent" style="display:none">
+            <h2>Календарь событий</h2>
+            <div style="margin-bottom:20px; background:#f8f9fa; padding:15px; border-radius:5px;">
+                <h4>Добавить событие</h4>
+                <input type="text" id="newEventTitle" placeholder="Название события" style="margin-right:10px;" />
+                <input type="datetime-local" id="newEventStart" style="margin-right:10px;" />
+                <input type="datetime-local" id="newEventEnd" placeholder="Окончание (необязательно)" style="margin-right:10px;" />
+                <input type="text" id="newEventAssignee" placeholder="Ответственный" style="margin-right:10px;" />
+                <button onclick="addCalendarEvent()">Добавить</button>
+            </div>
+            <div id="calendarEvents"></div>
+        </div>
+
+        <!-- Задачи (канбан) -->
+        <div id="tasks" class="tabcontent" style="display:none">
+            <h2>Доска задач</h2>
+            <div id="tasksBoard"></div>
+            <div style="margin-top:20px; background:#f8f9fa; padding:15px; border-radius:5px;">
+                <h4>Добавить задачу</h4>
+                <input type="text" id="newTaskTitle" placeholder="Название задачи" style="margin-right:10px;" />
+                <select id="newTaskPriority" style="margin-right:10px;">
+                    <option value="medium">Средний</option>
+                    <option value="high">Высокий</option>
+                    <option value="low">Низкий</option>
+                </select>
+                <input type="date" id="newTaskDue" style="margin-right:10px;" />
+                <input type="time" id="newTaskTime" style="margin-right:10px;" />
+                <input type="text" id="newTaskAssignee" placeholder="Ответственный" style="margin-right:10px;" />
+                <button onclick="addTask()">Добавить</button>
+            </div>
+        </div>
+
+        <!-- Заметки (JS генерирует весь интерфейс) -->
+        <div id="notes" class="tabcontent" style="display:none"></div>
+
+        <!-- Протоколы -->
+        <div id="protocols" class="tabcontent" style="display:none">
+            <h2>Протоколы</h2>
+            <button onclick="loadProtocols()">Обновить</button>
+            <div id="protocolsList"></div>
+        </div>
+
+        <!-- Уведомления -->
+        <div id="notifications" class="tabcontent" style="display:none">
+            <h2>Уведомления</h2>
+            <button onclick="loadNotifications()">Обновить</button>
+            <div id="notificationsList"></div>
+        </div>
+
+        <!-- Поиск -->
+        <div id="search" class="tabcontent" style="display:none">
+            <h2>Поиск по архиву</h2>
+            <input type="text" id="searchQuery" placeholder="Введите запрос" />
+            <div style="margin-top:10px;">
+                <input type="date" id="searchDateFrom" placeholder="С даты" />
+                <input type="date" id="searchDateTo" placeholder="По дату" />
+                <input type="text" id="searchAssignee" placeholder="Ответственный" />
+                <input type="text" id="searchTopic" placeholder="Тема" />
+            </div>
+            <button onclick="runSearch()">Искать</button>
+            <div id="searchResults"></div>
+        </div>
+
+        <!-- Аналитика -->
+        <div id="analytics" class="tabcontent" style="display:none">
+            <h2>Аналитика</h2>
+            <div id="statsSummary"></div>
+            <canvas id="analyticsChart" width="400" height="200"></canvas>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

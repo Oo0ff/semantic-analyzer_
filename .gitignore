@@ -1,0 +1,38 @@
+# Бинарники и сборка
+*.exe
+*.exe~
+desktop/build/bin/
+cli.exe
+*.dll
+*.lib
+
+# Временные файлы
+*.tmp
+*.log
+
+# Базы данных и пользовательские данные (могут содержать пароли/личные данные)
+*.db
+auth.db
+
+# Модели и большие файлы (если не хотите заливать в репозиторий)
+models/
+vosk-win64-*/
+
+# Файлы конфигурации с локальными путями (можно оставить общий config.yaml, но осторожно с путями)
+# config.yaml  # раскомментируйте, если config.yaml содержит абсолютные пути
+
+# Результаты анализов
+results/
+protocols/
+notifications/
+search_index/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Wails
+desktop/frontend/dist/
+desktop/frontend/wailsjs/
+desktop/frontend/node_modules/

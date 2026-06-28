@@ -1,0 +1,18 @@
+profiles:
+  - id: "ivanov"
+    name: "Иван Иванов"
+    email: "ivanov@example.com"
+    telegram: "@ivanov"
+    delivery: "file"   # file | telegram | email
+
+  - id: "petrova"
+    name: "Мария Петрова"
+    email: "petrova@example.com"
+    telegram: ""
+    delivery: "file"
+
+  - id: "default"
+    name: "Неизвестный участник"
+    email: ""
+    telegram: ""
+    delivery: "file"

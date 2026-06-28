@@ -1,0 +1,477 @@
+# Semantic Analyzer – Complete Configuration (updated for latest features)
+
+app:
+  name: "Semantic Analyzer"
+  version: "1.0.0"
+  max_text_size: 1000000
+  log_level: "info"
+  enable_debug: false
+
+audio:
+  enabled: true
+  model_path: "../models/vosk-model-small-ru-0.22"
+  sample_rate: 16000
+  supported_formats:
+    - ".wav"
+  python_path: "python"          # путь к интерпретатору Python
+  transcribe_script: "../transcribe.py"   # скрипт транскрипции
+  ffmpeg_path: "../ffmpeg/ffmpeg.exe"
+
+determinism:
+  base_seed: 42
+  enable_stable_sort: true
+  hash_algorithm: "sha256"
+
+processing:
+  unicode_normalization: "NFC"
+  enable_lowercase: true
+  sentence_delimiters: [".", "!", "?", ";", ":", "…", "—"]
+  preserve_whitespace: false
+  max_sentence_length: 1000
+  remove_punctuation: false
+  locale: "ru-RU"
+  stop_words:
+    - "и"
+    - "в"
+    - "на"
+    - "с"
+    - "по"
+    - "для"
+    - "от"
+    - "до"
+    - "из"
+    - "за"
+    - "к"
+    - "о"
+    - "об"
+    - "при"
+    - "у"
+    - "это"
+    - "то"
+    - "что"
+    - "как"
+    - "а"
+    - "но"
+    - "или"
+    - "не"
+    - "нет"
+    - "да"
+    - "бы"
+    - "же"
+    - "ли"
+    - "либо"
+    - "ни"
+    - "уж"
+    - "вот"
+    - "там"
+    - "тут"
+    - "тогда"
+    - "потом"
+    - "сейчас"
+    - "уже"
+
+rules:
+  atomic:
+    regex_patterns:
+      - id: "email_pattern"
+        pattern: "\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b"
+        weight: 0.95
+        type: "CONTACT_EMAIL"
+        level: 1
+        name: "Email-адрес"
+
+      - id: "url_pattern"
+        pattern: "(https?://|www\\.)[^\\s]+"
+        weight: 0.85
+        type: "URL"
+        level: 1
+        name: "Ссылка"
+
+      - id: "phone_ru_pattern"
+        pattern: "(?:\\+7|8)[\\s\\-–—]?\\(?\\d{3}\\)?[\\s\\-–—]?\\d{3}[\\s\\-–—]?\\d{2}[\\s\\-–—]?\\d{2}"
+        weight: 0.92
+        type: "CONTACT_PHONE"
+        level: 1
+        name: "Телефон (RU)"
+
+      - id: "date_ru_pattern"
+        pattern: "(?:\\d{1,2}[./]\\d{1,2}[./]\\d{2,4})|(?:\\d{1,2}\\s(?:янв|фев|мар|апр|мая|июн|июл|авг|сен|окт|ноя|дек)[а-я]*\\s\\d{4})"
+        weight: 0.8
+        type: "DATE"
+        level: 1
+        name: "Дата (русский формат)"
+
+      - id: "jira_ticket_pattern"
+        pattern: "\\b[A-Z]{2,10}-\\d{1,5}\\b"
+        weight: 0.9
+        type: "TASK_JIRA"
+        level: 1
+        name: "Тикет Jira / YouTrack"
+
+      - id: "version_pattern"
+        pattern: "\\b(v|версия|version)?\\s*\\d+\\.\\d+\\.\\d+(?:[-\\.]\\w+)?\\b"
+        weight: 0.75
+        type: "VERSION"
+        level: 1
+        name: "Версия приложения"
+
+    keyword_lists:
+      - id: "priority_ru"
+        keywords:
+          - "срочно"
+          - "важно"
+          - "критично"
+          - "приоритет"
+          - "немедленно"
+          - "urgent"
+          - "critical"
+          - "high priority"
+          - "блокирует"
+          - "блокер"
+          - "пожар"
+        weight: 0.85
+        type: "PRIORITY_HIGH"
+        level: 1
+        case_sensitive: false
+        name: "Высокий приоритет (рус + eng)"
+
+      - id: "action_ru"
+        keywords:
+          - "сделать"
+          - "нужно"
+          - "надо"
+          - "задача"
+          - "todo"
+          - "task"
+          - "follow up"
+          - "далее"
+          - "следующий шаг"
+          - "запланировать"
+          - "взять в работу"
+          - "поставить"
+          - "провести"
+          - "организовать"
+          - "встретиться"
+          - "обсудить"
+        weight: 0.7
+        type: "ACTION"
+        level: 1
+        case_sensitive: false
+        name: "Действия / задачи"
+
+      - id: "meeting_ru"
+        keywords:
+          - "встреча"
+          - "митап"
+          - "созвон"
+          - "call"
+          - "standup"
+          - "ретро"
+          - "планирование"
+          - "демо"
+          - "демонстрация"
+          - "обсуждение"
+        weight: 0.75
+        type: "MEETING"
+        level: 1
+        case_sensitive: false
+        name: "Встречи / созвоны"
+
+      - id: "positive_ru"
+        keywords:
+          - "хорошо"
+          - "отлично"
+          - "классно"
+          - "супер"
+          - "хорошая динамика"
+          - "положительный"
+          - "успех"
+          - "рост"
+          - "позитив"
+        weight: 0.5
+        type: "SENTIMENT_POSITIVE"
+        level: 1
+        case_sensitive: false
+        name: "Положительный тон"
+
+      - id: "negative_ru"
+        keywords:
+          - "проблема"
+          - "баг"
+          - "ошибка"
+          - "не работает"
+          - "критично"
+          - "плохо"
+          - "сломалось"
+          - "тормозит"
+          - "отложено"
+          - "задержка"
+        weight: 0.65
+        type: "SENTIMENT_NEGATIVE"
+        level: 1
+        case_sensitive: false
+        name: "Отрицательный тон / проблемы"
+
+  composite:
+    proximity_window: 500
+    min_density: 0.005
+    max_span: 2000
+    max_candidates: 15
+    selection_weights:
+      marker_count: 0.4
+      density: 0.3
+      span_compactness: 0.2
+      type_diversity: 0.1
+    type_weights:
+      CONTACT_EMAIL: 1.0
+      CONTACT_PHONE: 0.95
+      PRIORITY_HIGH: 0.9
+      ACTION: 0.8
+      TASK_JIRA: 0.85
+      MEETING: 0.75
+      DATE: 0.7
+      VERSION: 0.6
+      SENTIMENT_NEGATIVE: 0.8
+      SENTIMENT_POSITIVE: 0.4
+
+  semantic:
+    ner:
+      person_titles: ["т.", "г-н", "г-жа", "доктор", "проф.", "инж.", "руководитель", "менеджер", "тимлид", "по"]
+      organization_suffixes: ["ООО", "АО", "ПАО", "ИП", "Inc.", "LLC", "Ltd.", "GmbH", "App", "Team"]
+      location_patterns:
+        - "\\b(?:Москва|Питер|Петербург|Новосиб|Екатеринбург|Казань|Краснодар|Ростов|Самара|Уфа|Воронеж|Красноярск|Пермь|Волгоград)[а-я]*\\b"
+      location_keywords: ["офис", "город", "регион", "филиал", "удалённо", "онлайн", "zoom"]
+      person_patterns:
+        - id: "person_name_ru"
+          pattern: "\\b(?:[А-ЯЁ][а-яё]+\\s+){1,2}[А-ЯЁ][а-яё]+\\b"
+          weight: 0.85
+          type: "PERSON"
+          level: 3
+          name: "Имя человека (русский)"
+      organization_patterns:
+        - id: "company_ru"
+          pattern: "\\b(?:ООО|АО|ИП)?\\s*[А-ЯЁ][А-Яа-яЁё0-9\\s&\\.\\-]+(?:\\s+(?:ООО|АО|ИП|Inc.|LLC|App|Tech|Soft|Digital|Group|Labs|Studio))?\\b"
+          weight: 0.8
+          type: "ORGANIZATION"
+          level: 3
+          name: "Компания / команда (рус)"
+
+    networks:
+      technology: ["android", "ios", "flutter", "react native", "api", "backend", "frontend", "миграция", "рефакторинг", "багфикс", "деплой", "релиз", "тест", "автотесты", "ci/cd"]
+      business: ["рост", "пользователи", "конверсия", "retention", "lifetime", "доход", "выручка", "монетизация", "kpi", "цель", "метрика", "отчёт", "аналитика"]
+      project: ["спринт", "эпик", "таск", "story", "jira", "youtrack", "deadline", "миграция", "переход", "релиз", "прод", "стейдж", "деплои"]
+      contact: ["позвони", "напиши", "встреча", "созвон", "zoom", "telegram", "почта", "email", "телефон", "номер", "контакт"]
+
+    proximity_weights:
+      network_match: 0.45
+      type_similarity: 0.35
+      context_overlap: 0.2
+
+    logical_rules:
+      - id: "urgent_task_ru"
+        expression: "(MARKER_TYPE:PRIORITY_HIGH OR MARKER_TYPE:SENTIMENT_NEGATIVE) AND (MARKER_TYPE:ACTION OR MARKER_TYPE:TASK_JIRA) AND NEAR(5)"
+        type: "URGENT_TASK"
+        level: 4
+        weight: 0.95
+        output_type: "COMPOSITE"
+
+      - id: "meeting_with_action"
+        expression: "MARKER_TYPE:MEETING AND (MARKER_TYPE:ACTION OR MARKER_TYPE:TASK_JIRA) AND NEAR(4)"
+        type: "MEETING_ACTION"
+        level: 4
+        weight: 0.85
+        output_type: "COMPOSITE"
+
+      - id: "bug_blocker"
+        expression: "MARKER_TYPE:SENTIMENT_NEGATIVE AND (MARKER_TYPE:PRIORITY_HIGH OR keyword:блокер OR keyword:баг) AND NEAR(3)"
+        type: "CRITICAL_BUG"
+        level: 4
+        weight: 0.9
+        output_type: "COMPOSITE"
+
+      - id: "migration_issue"
+        expression: "(keyword:миграция OR keyword:переход OR keyword:бесшовный) AND (MARKER_TYPE:SENTIMENT_NEGATIVE OR keyword:баг OR keyword:проблема)"
+        type: "MIGRATION_PROBLEM"
+        level: 4
+        weight: 0.88
+        output_type: "COMPOSITE"
+
+final_processing:
+  suppression_rules:
+    - id: "test_email"
+      name: "Test Email Patterns"
+      type: "regex"
+      pattern: "test@.*\\.com|example@|тест@"
+      apply_to: ["CONTACT_EMAIL"]
+      reason: "Тестовый или примерный email"
+      weight: 0.9
+      enabled: true
+
+  deduplication:
+    enabled: true
+    overlap_threshold: 0.7
+    min_confidence_delta: 0.1
+    strategy: "keep_highest"
+
+  conflict_resolution:
+    enabled: true
+    priorities: ["level", "confidence", "rule_priority", "specificity"]
+    tie_breaker: "random_seed"
+
+performance:
+  max_workers: 10
+  buffer_size: 1000
+  enable_memory_pool: true
+  regex_compilation_cache_size: 100
+  enable_parallel_processing: true
+
+output:
+  enable_audit_trail: true
+  pretty_print_json: true
+  include_confidence_scores: true
+  timestamp_format: "2006-01-02T15:04:05Z07:00"
+  output_directory: "./results"
+  enable_compression: false
+  max_markers_per_file: 1000
+
+reporting:
+  format: "text"
+  include_sections: ["summary", "findings", "statistics", "actions", "risks"]
+  max_markers: 100
+  show_confidence: true
+  show_positions: true
+  group_by_level: true
+  sort_by: "confidence"
+
+# НОВЫЕ СЕКЦИИ, необходимые для текущей версии
+
+summarization:
+  max_sentences: 5
+  position_weight: 0.1
+  diversity_weight: 0.3      # 0 – без MMR, >0 – вес разнообразия (0..1)
+
+classification:
+  min_confidence: 0.2
+  topics:
+    - code: "TECH"
+      label: "Технологии и разработка"
+      keywords:
+        - word: "python"
+          weight: 1.0
+        - word: "go"
+          weight: 1.0
+        - word: "миграция"
+          weight: 1.2
+        - word: "баг"
+          weight: 1.2
+        - word: "деплой"
+          weight: 1.0
+        - word: "релиз"
+          weight: 1.0
+        - word: "тестирование"
+          weight: 1.0
+        - word: "рефакторинг"
+          weight: 1.0
+
+    - code: "HR"
+      label: "Персонал и встречи"
+      keywords:
+        - word: "найм"
+          weight: 1.0
+        - word: "собеседование"
+          weight: 1.0
+        - word: "сотрудник"
+          weight: 1.0
+        - word: "встреча"
+          weight: 1.0
+        - word: "созвон"
+          weight: 1.0
+        - word: "тимлид"
+          weight: 1.0
+        - word: "1-1"
+          weight: 0.8
+
+    - code: "ANALYTICS"
+      label: "Аналитика"
+      keywords:
+        - word: "отчёт"
+          weight: 1.2
+        - word: "метрика"
+          weight: 1.0
+        - word: "конверсия"
+          weight: 1.0
+        - word: "воронка"
+          weight: 0.8
+        - word: "дашборд"
+          weight: 0.8
+        - word: "аналитика"
+          weight: 1.0
+
+    - code: "FINANCE"
+      label: "Финансы"
+      keywords:
+        - word: "бюджет"
+          weight: 1.5
+        - word: "оплата"
+          weight: 1.2
+        - word: "счёт"
+          weight: 1.0
+        - word: "расход"
+          weight: 1.0
+        - word: "доход"
+          weight: 1.0
+        - word: "инвестиции"
+          weight: 1.0
+        - word: "прибыль"
+          weight: 1.0
+
+    - code: "PROJECT"
+      label: "Управление проектами"
+      keywords:
+        - word: "спринт"
+          weight: 1.0
+        - word: "эпик"
+          weight: 1.0
+        - word: "задача"
+          weight: 1.2
+        - word: "deadline"
+          weight: 1.5
+        - word: "веха"
+          weight: 1.0
+        - word: "релиз"
+          weight: 1.0
+        - word: "план"
+          weight: 1.0
+
+    - code: "MEETINGS"
+      label: "Встречи и совещания"
+      keywords:
+        - word: "встреча"
+          weight: 1.2
+        - word: "созвон"
+          weight: 1.0
+        - word: "планёрка"
+          weight: 1.0
+        - word: "совещание"
+          weight: 1.2
+        - word: "стендап"
+          weight: 0.8
+        - word: "демо"
+          weight: 0.8
+        - word: "обсуждение"
+          weight: 1.0
+
+calendar:
+  db_path: "./calendar.db"
+
+profiles:
+  path: "./configs/profiles.yaml"
+
+protocols:
+  dir: "./protocols"
+
+notifications:
+  dir: "./notifications"
+
+search:
+  index_path: "./search_index"

@@ -1,0 +1,234 @@
+/* Базовые стили */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background: #f5f7fa;
+    color: #333;
+}
+
+/* Экран входа / регистрации */
+.login-box, .register-box {
+    max-width: 360px;
+    margin: 60px auto;
+    background: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.login-box h2, .register-box h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+.login-box input, .register-box input {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+.login-box button, .register-box button {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 8px;
+    border: none;
+    border-radius: 4px;
+    background: #007bff;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+}
+.login-box button:hover, .register-box button:hover {
+    background: #0056b3;
+}
+#loginError, #regError {
+    margin-top: 8px;
+}
+
+/* Навигация */
+nav {
+    background: #2c3e50;
+    padding: 10px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+nav button.tablink {
+    background: transparent;
+    border: none;
+    color: #ecf0f1;
+    padding: 8px 14px;
+    margin-right: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    border-radius: 4px;
+}
+nav button.tablink.active {
+    background: #34495e;
+}
+nav button.tablink:hover {
+    background: #3d566e;
+}
+nav span#userDisplay {
+    margin-left: auto;
+    margin-right: 10px;
+    color: #ecf0f1;
+    font-weight: bold;
+}
+nav button:last-child {
+    background: #e74c3c;
+    border: none;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Вкладки */
+.tabcontent {
+    display: none;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.tabcontent.active {
+    display: block;
+}
+
+/* Формы и поля ввода */
+input, select, textarea {
+    font-size: 14px;
+    padding: 8px 10px;
+    margin-right: 6px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    vertical-align: middle;
+    box-sizing: border-box;
+}
+input[type="date"], input[type="datetime-local"] {
+    padding: 7px 8px; /* одинаковый размер */
+    font-size: 14px;
+}
+textarea {
+    font-size: 14px;
+}
+
+/* Кнопки */
+button {
+    padding: 8px 16px;
+    font-size: 14px;
+    border: none;
+    border-radius: 4px;
+    background: #007bff;
+    color: white;
+    cursor: pointer;
+    margin-right: 6px;
+    margin-bottom: 4px;
+    vertical-align: middle;
+}
+button:hover {
+    opacity: 0.9;
+}
+button.danger {
+    background: #e74c3c;
+}
+
+/* Календарь */
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+.calendar-header button {
+    background: #95a5a6;
+}
+.calendar-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.calendar-table th, .calendar-table td {
+    text-align: center;
+    vertical-align: top;
+    padding: 6px;
+    border: 1px solid #ddd;
+}
+.calendar-day {
+    cursor: pointer;
+    min-height: 60px;
+}
+.calendar-day:hover {
+    background: #f0f0f0;
+}
+.past-day {
+    color: #bdc3c7;
+}
+.event-dot {
+    color: #2980b9;
+    font-size: 18px;
+    line-height: 1;
+}
+.past-event-dot {
+    color: #bdc3c7;
+}
+
+/* Доска задач (канбан) */
+.kanban-column {
+    background: #f8f9fa;
+    border-radius: 8px;
+    min-width: 200px;
+}
+.kanban-column h4 {
+    margin: 0 0 10px 0;
+    padding-bottom: 6px;
+    border-bottom: 2px solid #007bff;
+}
+.task-card {
+    background: white;
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 6px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    cursor: grab;
+}
+
+/* Протоколы и уведомления */
+#protocolsList ul, #notificationsList ul {
+    list-style: none;
+    padding: 0;
+}
+#protocolsList li, #notificationsList li {
+    margin: 4px 0;
+}
+
+/* Аналитика */
+#analyticsChart {
+    max-width: 450px;
+    max-height: 250px;
+    margin-top: 10px;
+}
+#statsSummary {
+    margin-top: 15px;
+}
+
+/* Заметки */
+#notes .note-sidebar {
+    width: 220px;
+    float: left;
+    margin-right: 20px;
+}
+#notes .note-editor {
+    overflow: hidden;
+}
+
+/* Убираем красную обводку у кнопок-счётчиков (если есть) */
+button:focus {
+    outline: none;
+    box-shadow: none;
+}

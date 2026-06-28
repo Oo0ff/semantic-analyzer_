@@ -1,0 +1,73 @@
+# Этапы пайплайна
+stages:
+  - preprocess   # Линтинг, статический анализ, проверка безопасности
+  - test         # Тестирование
+  - build        # Сборка бинарника
+
+# Переменные
+variables:
+  GO_VERSION: "1.23"  # Актуальная версия Go (на момент написания)
+  GOPATH: $CI_PROJECT_DIR/.go  # Указываем GOPATH внутри проекта для кэширования
+
+# Кэширование модулей Go для ускорения
+cache:
+  paths:
+    - .go/pkg/mod/
+
+# Общий шаблон для всех джоб с Go
+.go-template:
+  image: golang:$GO_VERSION
+  before_script:
+    - mkdir -p .go
+    - export GOPATH=$CI_PROJECT_DIR/.go
+    - export PATH=$GOPATH/bin:$PATH
+    - go mod download
+
+# Джоба линтинга (используем golangci-lint)
+lint:
+  stage: preprocess
+  image: golangci/golangci-lint:latest
+  script:
+    - golangci-lint run ./...
+
+# Статический анализ (staticcheck)
+staticcheck:
+  stage: preprocess
+  extends: .go-template
+  script:
+    - go install honnef.co/go/tools/cmd/staticcheck@latest
+    - staticcheck ./...
+
+# Проверка безопасности зависимостей (gosec)
+gosec:
+  stage: preprocess
+  extends: .go-template
+  script:
+    - go install github.com/securego/gosec/v2/cmd/gosec@latest
+    - gosec ./...
+
+# Тестирование
+test:
+  stage: test
+  extends: .go-template
+  script:
+    - go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.txt
+    paths:
+      - coverage.txt
+    expire_in: 1 week
+
+# Сборка бинарника
+build:
+  stage: build
+  extends: .go-template
+  script:
+    - go build -o semantic-analyzer ./cmd/...   # предположим, что main.go лежит в cmd/ (или замените на ваш путь)
+  artifacts:
+    paths:
+      - semantic-analyzer
+    expire_in: 1 month

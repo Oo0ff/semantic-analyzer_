@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "1.2",
+  "version": "1.2",
+  "terms": [
+    {
+      "uuid": "term_migration",
+      "definition": "Процесс миграции пользователей между старым и новым приложением",
+      "variants": ["миграция", "переход", "бесшовный переход"],
+      "patterns": ["миграци\\w*", "переход"],
+      "class": "process",
+      "domain": "development",
+      "codes": {"jira": "MIGR-001"}
+    },
+    {
+      "uuid": "term_bug",
+      "definition": "Ошибка или дефект в системе",
+      "variants": ["баг", "ошибка", "дефект", "блокер"],
+      "patterns": ["баг\\w*", "ошибк\\w*"],
+      "class": "issue",
+      "domain": "testing",
+      "codes": {"jira": "BUG-001"}
+    }
+  ]
+}
